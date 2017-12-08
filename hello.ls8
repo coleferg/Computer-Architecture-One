@@ -1,0 +1,29 @@
+00000001 # initialize
+00000010 # SET current register
+00000000 # register R0
+00000100 # SAVE next
+01001000 # H
+00000010 # SET current register
+00000000 # register R0
+00000100 # SAVE next
+01100101 # e
+00000010 # SET current register
+00000000 # register R0
+00000100 # SAVE next
+01101100 # l
+00000010 # SET current register
+00000000 # register R0
+00000100 # SAVE next
+01101100 # l
+00000010 # SET current register
+00000000 # register R0
+00000100 # SAVE next
+01101111 # o
+00100000 # ' '
+01110111 # w
+01101111 # o
+01110010 # r
+01101100 # l
+01100100 # d
+00100001 # !
+00000000 # Last input

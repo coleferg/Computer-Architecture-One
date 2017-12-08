@@ -7,14 +7,28 @@ const ADD   = 0b00001000;
 const DIV   = 0b00001001;
 const PRN   = 0b00000110;
 const HALT  = 0b00000000;
+const INC   = 0b00001011;
+const DEC   = 0b00001111;
+const PUSH  = 0b00010000;
+const POP   = 0b00010001;
+const CALL  = 0b00010010;
+const RET   = 0b00010011;
+const LD    = 0b00010100;
+const ST    = 0b00010101;
+const LDRI  = 0b00010110;
+const STRI  = 0b00010111;
+
+const SP    = 0
 
 class CPU {
     constructor() {
         this.mem = new Array(256);
         this.mem.fill(0);
+        this.mem[SP] = SP;
 
         this.reg = new Array(256);
         this.reg.fill(0);
+        this.reg[7] = SP
 
         this.reg.PC = 0;
 
@@ -27,14 +41,24 @@ class CPU {
     buildBranchTable() {
         let bt = {
             [INIT]: this.INIT,
-            [SET]: this.SET,
+            [SET] : this.SET,
             [SAVE]: this.SAVE,
-            [MUL]: this.MUL,
-            [SUB]: this.SUB,
-            [ADD]: this.ADD,
-            [DIV]: this.DIV,
-            [PRN]: this.PRN,
-            [HALT]: this.HALT
+            [MUL] : this.MUL,
+            [SUB] : this.SUB,
+            [ADD] : this.ADD,
+            [DIV] : this.DIV,
+            [PRN] : this.PRN,
+            [HALT]: this.HALT,
+            [INC] : this.INC,
+            [DEC] : this.DEC,
+            [PUSH]: this.PUSH,
+            [POP] : this.POP,
+            [CALL]: this.CALL,
+            [RET] : this.RET,
+            [LD]: this.LD,
+            [ST] : this.ST,
+            [LDRI]: this.LDRI,
+            [STRI] : this.STRI,
         };
         // bt[INIT] = this.INIT;
         // bt[SET] = this.SET;
@@ -60,7 +84,7 @@ class CPU {
      * startClock
      */
     startClock() {
-        this.clock = setInterval(() => { this.tick(); }, 500);
+        this.clock = setInterval(() => { this.tick(); }, 400);
     }
 
     /**
@@ -123,6 +147,7 @@ class CPU {
         console.log('SAVE');
         this.reg[this.curReg] = this.mem[this.reg.PC + 1];
         this.reg.PC += 2;
+        console.log(this.reg[this.curReg])
     }
 
     /**
@@ -163,6 +188,80 @@ class CPU {
         this.reg[this.curReg] = val1 / val2;
 
         this.reg.PC += 3;
+    }
+
+    INC() {
+        console.log('INC');
+        this.reg[this.curReg] += 1;
+
+        this.reg.PC += 1;
+    }
+
+    DEC() {
+        console.log('DEC');
+        this.reg[this.curReg] -= 1;
+
+        this.reg.PC += 1;
+    }
+
+    PUSH() {
+        console.log('PUSH');
+
+        this.reg[7] = (this.reg[7] - 1) & 0xff;
+        this.mem[this.reg[7]] = this.reg[this.curReg]
+        this.reg.PC++;
+    }
+
+    POP() {
+        console.log('POP');
+
+        this.reg[this.curReg] = this.mem[this.reg[7]]
+        this.reg[7] = (this.reg[7] + 1) & 0xff;
+        this.reg.PC++;
+    }
+
+    CALL() {
+        console.log('CALL');
+
+        this.reg[7] = (this.reg[7] - 1) & 0xff;
+        this.mem[this.reg[7]] = this.mem[this.reg.PC + 1]
+        this.reg.PC += 2;
+    }
+
+    RET() {
+        console.log('RET');
+
+        this.reg.PC = this.mem[this.reg[7]]
+        console.log('RET to ', this.reg.PC)
+        this.reg[7] = (this.reg[7] + 1) & 0xff;
+    }
+
+    LD() {
+        console.log('LD');
+
+        this.reg[this.curReg] = this.mem[this.mem[this.reg.PC + 1]]
+        this.reg.PC += 2;
+    }
+
+    ST() {
+        console.log('ST');
+
+        this.mem[this.mem[this.reg.PC + 1]] = this.reg[this.curReg]
+        this.reg.PC += 2;
+    }
+
+    LDRI() {
+        console.log('LDRI');
+    
+        this.reg[this.curReg] = this.mem[this.reg[this.mem[this.reg.PC + 1]]];
+        this.reg.PC += 2;
+    }
+
+    STRI() {
+        console.log('STRI');
+        
+        this.mem[this.reg[this.mem[this.reg.PC + 1]]] = this.reg[this.curReg];
+        this.reg.PC += 2;
     }
 
     /**

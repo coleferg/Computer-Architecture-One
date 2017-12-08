@@ -1,0 +1,13 @@
+#Looping counter
+
+00000001 # initialize
+00000010 # SET current register
+00000000 # register R0
+00000100 # SAVE next
+00001000 # 8
+00010010 # CALL
+00000101 # address 5
+00001011 # INC current register
+00000110 # PRN (print numeric) (should print 72)
+00010011 # RET
+00000000 # HALT
